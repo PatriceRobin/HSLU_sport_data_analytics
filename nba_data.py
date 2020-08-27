@@ -6,6 +6,15 @@ import numpy as np
 import seaborn as sns
 
 
+def centroid(vertexes, index):
+    _list = [vertex [index] for vertex in vertexes]
+    _len = len(vertexes)
+    if index == 0:
+        return 0.2 + (sum(_list) / _len) / 800
+    elif index == 1:
+        return 0.025 + (sum(_list) / _len) / 600
+    return 0
+
 court = Court.Court()
 parser = ParseNBAJson.ParseNBAJson()
 data = parser.get_season_shot_chart_per_area(ParseNBAJson.ParseNBAJson.Season_2017_2018_File, ParseNBAJson.ParseNBAJson.event_types)
@@ -31,6 +40,12 @@ colors = density / max(density)
 p = PatchCollection(court.get_areas(patches, True), cmap = cmap)
 p.set_array(colors)
 ax.add_collection(p)
+props = dict(boxstyle='round', facecolor='darkseagreen', alpha=0.75)
+for key in data.keys():
+    #print(key + ": " + str(centroid(court.Areas[key], 0)) + " / " + str(centroid(court.Areas[key], 1)))
+    #print(str(data[key]['made']) + " / " + str(data[key]['number']))
+    textstr = str(data[key]['made']) + ' / ' + str(data[key]['number']) + '\n' + str(round((100 / data[key]['number'] * data[key]['made']), 2)) + " %"
+    ax.text(centroid(court.Areas[key], 0), centroid(court.Areas[key], 1), textstr, transform=ax.transAxes, fontsize=8, color='black', verticalalignment='top', bbox=props, zorder=15)
 plt.show()
 
 # joint_shot_chart = sns.jointplot(data['x'], data['y'], stat_func = None, kind = 'hex', space = 0, color = cmap(0.2), cmap = cmap)

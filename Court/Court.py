@@ -93,7 +93,6 @@ class Court:
 
     def get_areas(self, court_elements, plot=False):
         # Draw the official areas on the court
-        #pass
         self.__add_areas(court_elements, "underbasket", plot)
         self.__add_areas(court_elements, "inthepaint", plot)
         self.__add_areas(court_elements, "insiderightwing", plot)
@@ -111,7 +110,7 @@ class Court:
 
     def __add_areas(self, court_elements, area, plot, lw=2, color='red'):
         xy = np.array(self.Areas[area])
-        if plot == True:
+        if plot:
             x = list()
             y = list()
             x = [x.append(i) for i in self.Areas[area]]
