@@ -20,6 +20,23 @@ class Court:
              "outsideleftwing": ((0, 600), (122, 600), (115, 564), (0, 564)),
              "backcourt": ((492, 0), (564, 0), (564, 600), (492, 600))}
 
+    Areas_Label_Position: dict = {"underbasket": {'x': 0.2, 'y': 0.525, 'xn': 0.31, 'yn': 0.515},
+                                  "inthepaint": {'x': 0.375, 'y': 0.525, 'xn': 0.375, 'yn': 0.515},
+                                  "insiderightwing": {'x': 0.265, 'y': 0.265, 'xn': 0.265, 'yn': 0.265},
+                                  "insideright": {'x': 0.4, 'y': 0.265, 'xn': 0.4, 'yn': 0.265},
+                                  "insidecenter": {'x': 0.525, 'y': 0.525, 'xn': 0.525, 'yn': 0.515},
+                                  "insideleft": {'x': 0.4, 'y': 0.765, 'xn': 0.4, 'yn': 0.765},
+                                  "insideleftwing": {'x': 0.265, 'y': 0.765, 'xn': 0.265, 'yn': 0.765},
+                                  "outsiderightwing": {'x': 0.265, 'y': 0.1, 'xn': 0.265, 'yn': 0.0925},
+                                  "outsideright": {'x': 0.55, 'y': 0.15, 'xn': 0.55, 'yn': 0.15},
+                                  "outsidecenter": {'x': 0.675, 'y': 0.525, 'xn': 0.675, 'yn': 0.515},
+                                  "outsideleft": {'x': 0.55, 'y': 0.9, 'xn': 0.55, 'yn': 0.9},
+                                  "outsideleftwing": {'x': 0.265, 'y': 0.95, 'xn': 0.265, 'yn': 0.935},
+                                  "backcourt": {'x': 0.825, 'y': 0.525, 'xn': 0.8, 'yn': 0.515}}
+
+    # draw the court of a half basketball court
+    # credits goes to the author http://savvastjortjoglou.com/nba-shot-sharts.html
+    # the print of the court is copied from the mentioned website but is turned by 90°
     def draw_court(self, ax=None, color='black', lw=2, outer_lines=False, with_areas=False):
         # If an axes object isn't provided to plot onto, just get current one
         if ax is None:
@@ -91,6 +108,7 @@ class Court:
 
         return ax
 
+    # define the areas for the shot chart
     def get_areas(self, court_elements, plot=False):
         # Draw the official areas on the court
         self.__add_areas(court_elements, "underbasket", plot)
@@ -108,6 +126,7 @@ class Court:
         self.__add_areas(court_elements, "backcourt", plot)
         return court_elements
 
+    # create all the Polygons for the areas on the court
     def __add_areas(self, court_elements, area, plot, lw=2, color='red'):
         xy = np.array(self.Areas[area])
         if plot:
@@ -116,5 +135,5 @@ class Court:
             x = [x.append(i) for i in self.Areas[area]]
             y = [y.append(i) for i in self.Areas[area]]
             plt.plot(x, y, "k")
-        area = Polygon(xy, linewidth=lw, color='red', fill=False, closed = True, zorder=5)
+        area = Polygon(xy, linewidth=lw, color='red', fill=False, closed=True, zorder=5)
         court_elements.append(area)
