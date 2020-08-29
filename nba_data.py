@@ -17,13 +17,14 @@ def centroid(vertexes, index):
 
 court = Court.Court()
 parser = ParseNBAJson.ParseNBAJson()
-#data = parser.get_season_shot_chart_per_area_and_player(ParseNBAJson.ParseNBAJson.Season_2018_2019_File, ParseNBAJson.ParseNBAJson.event_types, ParseNBAJson.ParseNBAJson.Player_Siakam)
-data = parser.get_season_shot_chart_per_area(ParseNBAJson.ParseNBAJson.Season_2018_2019_File, ParseNBAJson.ParseNBAJson.event_types)
-# data = parser.get_season_shot_chart_as_coordinates(ParseNBAJson.ParseNBAJson.Season_2018_2019_File, ParseNBAJson.ParseNBAJson.event_types)
+#data = parser.get_season_shot_chart_per_area_and_player(ParseNBAJson.ParseNBAJson.Season_2017_2018_File, ParseNBAJson.ParseNBAJson.event_types_, ParseNBAJson.ParseNBAJson.Player_Siakam)
+data = parser.get_season_shot_chart_per_area(ParseNBAJson.ParseNBAJson.Season_2017_2018_File, ParseNBAJson.ParseNBAJson.event_types)
+#data = parser.get_season_shot_chart_as_coordinates(ParseNBAJson.ParseNBAJson.Season_2018_2019_File, ParseNBAJson.ParseNBAJson.event_types)
+#data = parser.get_season_player_shot_chart_as_coordinates(ParseNBAJson.ParseNBAJson.Season_2017_2018_File, ParseNBAJson.ParseNBAJson.Player_Siakam, ParseNBAJson.ParseNBAJson.event_types)
 sns.set_style("white")
 sns.set_color_codes()
 
-if isinstance(data, dict):
+if 'underbasket' in data:
     sum_shots = 0
     for key in data.keys():
         sum_shots = sum_shots + data[key]['number']
@@ -43,23 +44,27 @@ if isinstance(data, dict):
     props_number = dict(boxstyle='round', alpha=0.0)
     number = 1
     #ax.set_title("Shot Chart 2017-2018 Reg. Season", y = 1, fontsize = 18)
-    ax.set_title("Shot Chart 2018-2019 Reg. Season", y = 1, fontsize = 18)
+    ax.set_title("Shot Chart 2017-2018 Reg. Season", y = 1, fontsize = 18)
     for key in data.keys():
-        textstr = str(data[key]['made']) + ' / ' + str(data[key]['number']) + '\n' + str(round((100 / sum_shots * data[key]['number']), 2)) + " %"
+        # textstr = str(data[key]['made']) + ' / ' + str(data[key]['number']) + '\n' + str(round((100 / sum_shots * data[key]['number']), 2)) + " %"
+        textstr = str(data[key]['made']) + '\n' + str(round((100 / sum_shots * data[key]['number']), 2)) + " %"
         ax.text(court.Areas_Label_Position[key]['x'], court.Areas_Label_Position[key]['y'], textstr, transform=ax.transAxes, fontsize=8, color='black', verticalalignment='top', bbox=props_ratio, zorder=15)
         #ax.text(court.Areas_Label_Position[key]['xn'], court.Areas_Label_Position[key]['yn'], str(number), transform=ax.transAxes, fontsize=10, weight='bold', color='black', verticalalignment='top', bbox=props_number, zorder=15)
         #ax.text(centroid(court.Areas[key], 0), centroid(court.Areas[key], 1), textstr, transform=ax.transAxes, fontsize=8, color='black', verticalalignment='top', bbox=props, zorder=15)
         number += 1
     plt.show()
 else:
-    cmap=plt.cm.YlOrRd_r
-    joint_shot_chart = sns.jointplot(data['x'], data['y'], stat_func=None, kind='kde', space=0, color=cmap(0.2), cmap=cmap, n_levels=50)
+    cmap = plt.cm.gist_heat_r
+    joint_shot_chart = sns.jointplot(data['x'], data['y'], stat_func = None, kind = 'hex', space = 0, color = cmap(0.2), cmap = cmap)
 
-    joint_shot_chart.fig.set_size_inches(15, 15)
+    #cmap=plt.cm.YlOrRd_r
+    #joint_shot_chart = sns.jointplot(data['x'], data['y'], stat_func=None, kind='kde', space=0, color=cmap(0.2), cmap=cmap, n_levels=50)
+
+    joint_shot_chart.fig.set_size_inches(15, 11)
     ax = joint_shot_chart.ax_joint
     court.draw_court(ax, outer_lines = True, with_areas = True)
     ax.set_xlabel('')
     ax.set_ylabel('')
     ax.tick_params(labelbottom = 'off', labelleft = 'off')
-    ax.set_title("Shot Chart 2017-2018 Reg. Season", y = 1, fontsize = 18)
+    ax.set_title("Shot Chart 2017-2018 Reg. Season Player Siakam", y = 1, fontsize = 18)
     plt.show()
