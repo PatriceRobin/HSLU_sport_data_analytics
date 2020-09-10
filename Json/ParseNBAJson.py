@@ -6,6 +6,8 @@ import zipfile
 class ParseNBAJson:
     Season_2017_2018_File = 'toronto_raptors_play_by_play_2017-2018.json'
     Season_2018_2019_File = 'toronto_raptors_play_by_play_2018-2019.json'
+    Standing_Season_2017_File = "Data/standing_season_2017.json"
+    Standing_Season_2018_File = "Data/standing_season_2018.json"
     Player_Siakam_File = 'Data/Pascal_Siakam.json'
     Player_DeRozan_File = 'Data/DeMar_DeRozan.json'
     Player_Leonard_File = 'Data/Kawhi_Leonard.json'
@@ -63,6 +65,22 @@ class ParseNBAJson:
 
         return self.__json_parse_season(season, event_types, coordinates, self.__season_per_player, player)
 
+    def get_standing_total_games(self, season):
+        retval = 0
+        return self.__json_parse_standing(season, retval, self.__standing_number_games)
+
+    def get_standing_wins(self, season):
+        retval = 0
+        return self.__json_parse_standing(season, retval, self.__standing_team_wins, self.__team_name)
+
+    def get_standing_losses(self, season):
+        retval = 0
+        return self.__json_parse_standing(season, retval, self.__standing_team_losses, self.__team_name)
+
+    def get_standing_number_teams(self, season):
+        retval = 0
+        return self.__json_parse_standing(season, retval, self.__standing_teams)
+
     def __json_parse_season(self, season, event_types, retval, filter_method, player=None):
         # read the team json from the zipfile
         archive = zipfile.ZipFile('Data/toronto_raptors_play_by_play.zip', 'r')
@@ -83,6 +101,25 @@ class ParseNBAJson:
                                     else:
                                         filter_method(stat, event, retval, player)
         return retval
+
+    def __json_parse_standing(self, season, retval: int, filter_method, teamname=None):
+        # read the standing json file
+        with open(season) as input_file:
+            objs = ijson.items(input_file, '')
+
+            # iterate the whole json
+            for games in objs:
+                for conference in games['conferences']:
+                    for division in conference['divisions']:
+                        for team in division['teams']:
+                            if teamname is None:
+                                retval = retval + filter_method(team)
+                            else:
+                                retval = retval + filter_method(team, teamname)
+        if teamname is None:
+            return int(retval/2)
+        else:
+            return retval
 
     # filter the data for one season per given player
     # return the coordinates from each shot
@@ -153,3 +190,28 @@ class ParseNBAJson:
                 dict['missed'] = dict['missed'] + 1
             elif event['event_type'] in self.event_types_made :
                 dict['made'] = dict['made'] + 1
+
+    # calculate all games
+    def __standing_number_games(self, team):
+        # add wins und losses together for each team
+        return int(team['wins']) + int(team['losses'])
+
+    # get wins per team
+    def __standing_team_wins(self, team, teamname):
+        # add wins und losses together for each team
+        if team['name'] == teamname:
+            return int(team['wins'])
+        else:
+            return 0
+
+    # get wins per team
+    def __standing_team_losses(self, team, teamname):
+        # add wins und losses together for each team
+        if team['name'] == teamname:
+            return int(team['losses'])
+        else:
+            return 0
+
+    # calculate number of teams
+    def __standing_teams(self, team):
+        return 2
