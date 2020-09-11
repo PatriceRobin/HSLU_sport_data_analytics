@@ -13,12 +13,14 @@ games = wins + losses
 
 nags = (teams * games)/2
 win_rate = wins / games
-game_coin_toss = math.sqrt(0.5 * (0.5 / games))
+game_coin_toss = math.sqrt(0.5 * (0.5 / nags))
 real = win_rate
 luck = game_coin_toss
 skill = real - luck
 
 print("luck:  " + str(luck))
 print("skill: " + str(skill))
+print("contribution luck:  " + str(luck / real))
+print("contribution skill: " + str(skill / real))
 
 
